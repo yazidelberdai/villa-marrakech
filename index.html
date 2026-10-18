@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Villa Marrakech · 3D Walkthroughs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  .tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .tab { border: 0; background: none; padding: 12px 18px 14px; font: 600 16px Inter, sans-serif; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; text-align: left; }
+  .tab span { display: block; font-weight: 400; font-size: 12px; margin-top: 2px; }
+  .tab.on { color: var(--ink); border-bottom-color: var(--accent); }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  a.go { display: inline-block; background: var(--ink); color: #fff; padding: 11px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; text-decoration: none; }
+  a.go.alt { background: var(--accent); }
+  a.go.photo { background: #fff; color: var(--ink); border: 1px solid var(--ink); }
+  a.go:hover { opacity: .9; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  :root { --bg: #f4ece0; --ink: #2a211b; --muted: #7a6a5c; --card: #fffaf3; --line: #e5d8c6; --accent: #b8673f; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: Inter, system-ui, sans-serif; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 56px 16px 40px; }
+  .eyebrow { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+  h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(40px, 6vw, 68px); font-weight: 600; margin: 8px 0 10px; line-height: 1; }
+  p.lead { color: var(--muted); max-width: 640px; line-height: 1.6; margin: 0 0 36px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .swatch { height: 170px; display: grid; grid-template-columns: repeat(5, 1fr); }
+  .swatch div { height: 100%; }
+  .body { padding: 22px 22px 24px; }
+  .body h2 { font-family: 'Cormorant Garamond', serif; font-size: 34px; margin: 0 0 6px; font-weight: 600; }
+  .body p { margin: 0 0 14px; color: var(--muted); line-height: 1.55; font-size: 14px; }
+  .body ul { margin: 0 0 18px; padding-left: 18px; color: var(--ink); font-size: 13.5px; line-height: 1.7; }
+  .go { display: inline-block; background: var(--ink); color: #fff; padding: 11px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; }
+  .plan { margin-top: 36px; display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+  .plan img { width: 100%; border-radius: 10px; display: block; }
+  .plan p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0 0 8px; }
+  .plan strong { color: var(--ink); }
+  @media (max-width: 700px) { .plan { grid-template-columns: 1fr; } .wrap { padding-top: 32px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Villa · Marrakech · Ground floor</div>
+  <h1>Your two plans, finished two ways</h1>
+  <p class="lead">Each plan is modelled from your drawing — same plot, real dimensions. Pick a plan, then a finish. Every finish has a <strong>3D model</strong> walk-in and a <strong>Photoreal</strong> walk-in with scanned real furniture, real materials and a real sky. In either, the 📷 button saves a high-resolution photo of what you're looking at.</p>
+  <div class="tabs" role="tablist">
+    <button class="tab on" data-tab="1" role="tab">Plan 1 <span>Pool across the south terrace</span></button>
+    <button class="tab" data-tab="2" role="tab">Plan 2 <span>Pool along the west terrace</span></button>
+  </div>
+  <div id="panes"></div>
+</div>
+<script>
+const PLANS = {
+  1: { photo: './ref/plan_small.jpg', rooms: 'Salon + séjour (58.26 m²), dining room (28.39 m²), entrance hall, cloakroom with two basins, WC, lift, U-shaped staircase (22 risers), kitchen (20.20 m²), staff room with shower (8.75 m²), storage room, south terrace, 8 m pool with plage, raised jacuzzi, 2-car parking and the four trees marked 5 M / 4 M.' },
+  2: { photo: './ref/plan2_small.jpg', rooms: 'Salon marocain (30.54 m²), séjour with U-shaped sofa (37.73 m²), dining room for 10, entrance hall, cloakroom (7.13 m²), WC, lift, staircase you can walk under to the kitchen (20.32 m²), staff room with shower (8.75 m²), storage room (4.52 m²), west terrace with pool, plage and jacuzzi, 2-car parking and trees. The second "5 M" circle sits over the pool on the drawing, so no tree is placed there.' },
+};
+const STYLES = [
+  { key: 'mid', name: 'Mid-Luxury', lede: 'Modern Moroccan comfort: bright, warm and easy to live in.', sw: ['#e8dfd0', '#c9a57c', '#cfcac2', '#c98b3c', '#d39a7c'],
+    items: ['Large beige porcelain floors, warm white walls', 'Light oak, linen sofas, Beni Ouarain rugs, rattan pendants', 'White and oak kitchen with stone worktop', 'Terracotta terrace, sky-blue pool, loungers and parasols'] },
+  { key: 'lux', name: 'Luxury', lede: 'Riad-meets-contemporary: stone, tadelakt and brass.', sw: ['#f4f1ec', '#dcc7ab', '#5c3c28', '#1f4d3f', '#c9a25e'],
+    items: ['Polished Calacatta marble, tadelakt walls, walnut slat ceilings', 'Emerald velvet and bouclé seating, brass chandeliers, Moroccan lanterns', 'Fluted walnut kitchen with waterfall marble island', 'Green zellige pool, sandstone terrace, pergola, fountain, cypress, olives, fire pit'] },
+];
+function render(plan) {
+  document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('on', t.dataset.tab === plan));
+  const P = PLANS[plan];
+  document.getElementById('panes').innerHTML = `<div class="grid">${STYLES.map((s) => `
+    <div class="card">
+      <div class="swatch">${s.sw.map((c) => `<div style="background:${c}"></div>`).join('')}</div>
+      <div class="body"><h2>${s.name}</h2><p>${s.lede}</p><ul>${s.items.map((i) => `<li>${i}</li>`).join('')}</ul>
+        <div class="btns"><a class="go" href="./viewer.html?plan=${plan}&style=${s.key}">3D walk-in →</a><a class="go alt" href="./tour.html?plan=${plan}&style=${s.key}">Photoreal walk-in →</a><a class="go photo" href="./viewer.html?plan=${plan}&style=${s.key}&real=1">Free-roam realistic 3D →</a></div>
+      </div></div>`).join('')}</div>
+    <div class="plan"><img src="${P.photo}" alt="Plan ${plan} photo"><div>
+      <p><strong>Modelled from plan ${plan}:</strong> ${P.rooms}</p>
+      <p><strong>Not in the drawing:</strong> the upper floor (stairs and lift lead into a closed shaft). Ceiling height, window sills and finishes are assumptions. Photoreal mode loads about 200 MB of real furniture and materials the first time.</p>
+    </div></div>`;
+  history.replaceState(null, '', '#plan' + plan);
+}
+document.querySelectorAll('.tab').forEach((t) => (t.onclick = () => render(t.dataset.tab)));
+render(location.hash === '#plan2' ? '2' : '1');
+</script>
+</body>
+</html>

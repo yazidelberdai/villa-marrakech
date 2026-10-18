@@ -1,0 +1,507 @@
+{
+ "plan": 1,
+ "style": "lux",
+ "spots": [
+  {
+   "id": "hall",
+   "name": "Hall d'entrée",
+   "x": 20.37,
+   "z": 7.65,
+   "yaw": 1.319468914507713,
+   "dirs": [
+    {
+     "file": "plan1-lux-hall.jpg",
+     "yaw": 1.3195,
+     "links": [
+      {
+       "to": "salon",
+       "x": 0.33629437520502325,
+       "y": 0.5650568729257315,
+       "dist": 9.8,
+       "hidden": true
+      },
+      {
+       "to": "sejour",
+       "x": 0.17106984273003334,
+       "y": 0.5750422164393859,
+       "dist": 10.4,
+       "hidden": true
+      },
+      {
+       "to": "terrasse",
+       "x": 0.11734043085574086,
+       "y": 0.5637300370099564,
+       "dist": 12,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-hall-1.jpg",
+     "yaw": 2.8903,
+     "links": [
+      {
+       "to": "sam",
+       "x": 0.605193857901688,
+       "y": 0.7274213234494236,
+       "dist": 4.2,
+       "hidden": true
+      },
+      {
+       "to": "cuisine",
+       "x": 0.455073604498453,
+       "y": 0.5999077463430482,
+       "dist": 7.3,
+       "hidden": true
+      },
+      {
+       "to": "piscine",
+       "x": 0.639311626565154,
+       "y": 0.5308803953669271,
+       "dist": 13.3,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-hall-2.jpg",
+     "yaw": 4.4611,
+     "links": []
+    },
+    {
+     "file": "plan1-lux-hall-3.jpg",
+     "yaw": 6.0319,
+     "links": []
+    }
+   ]
+  },
+  {
+   "id": "salon",
+   "name": "Salon",
+   "x": 10.77,
+   "z": 8.45,
+   "yaw": 1.5707963267948966,
+   "dirs": [
+    {
+     "file": "plan1-lux-salon.jpg",
+     "yaw": 1.5708,
+     "links": []
+    },
+    {
+     "file": "plan1-lux-salon-1.jpg",
+     "yaw": 3.1416,
+     "links": [
+      {
+       "to": "sejour",
+       "x": 0.5,
+       "y": 0.8283816263166979,
+       "dist": 3.2,
+       "hidden": false
+      },
+      {
+       "to": "terrasse",
+       "x": 0.6306786677510349,
+       "y": 0.7066285563962204,
+       "dist": 4.6,
+       "hidden": false
+      },
+      {
+       "to": "piscine",
+       "x": 0.3734021281982245,
+       "y": 0.5484390291914476,
+       "dist": 11,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-salon-2.jpg",
+     "yaw": 4.7124,
+     "links": [
+      {
+       "to": "hall",
+       "x": 0.46071698812350786,
+       "y": 0.5587622998539502,
+       "dist": 9.8,
+       "hidden": true
+      },
+      {
+       "to": "sam",
+       "x": 0.6626897099366011,
+       "y": 0.5851087777503216,
+       "dist": 8.4,
+       "hidden": true
+      },
+      {
+       "to": "cuisine",
+       "x": 0.843266988731785,
+       "y": 0.573556339400702,
+       "dist": 10.6,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-salon-3.jpg",
+     "yaw": 6.2832,
+     "links": []
+    }
+   ]
+  },
+  {
+   "id": "sejour",
+   "name": "Séjour",
+   "x": 10.77,
+   "z": 11.25,
+   "yaw": -0.9424777960769379,
+   "dirs": [
+    {
+     "file": "plan1-lux-sejour.jpg",
+     "yaw": -0.9425,
+     "links": [
+      {
+       "to": "hall",
+       "x": 0.6302814965960308,
+       "y": 0.5554867319881055,
+       "dist": 10.4,
+       "hidden": true
+      },
+      {
+       "to": "sam",
+       "x": 0.8311667544560869,
+       "y": 0.616470982130345,
+       "dist": 8,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-sejour-1.jpg",
+     "yaw": 0.6283,
+     "links": [
+      {
+       "to": "salon",
+       "x": 0.8287147726800133,
+       "y": 0.9146243722906782,
+       "dist": 3.2,
+       "hidden": false
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-sejour-2.jpg",
+     "yaw": 2.1991,
+     "links": []
+    },
+    {
+     "file": "plan1-lux-sejour-3.jpg",
+     "yaw": 3.7699,
+     "links": [
+      {
+       "to": "cuisine",
+       "x": 0.20407832956412586,
+       "y": 0.5860701720615986,
+       "dist": 9.3,
+       "hidden": true
+      },
+      {
+       "to": "piscine",
+       "x": 0.6342694291638722,
+       "y": 0.5827539284135871,
+       "dist": 8.4,
+       "hidden": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sam",
+   "name": "Salle à manger",
+   "x": 18.57,
+   "z": 11.15,
+   "yaw": 0.7853981633974483,
+   "dirs": [
+    {
+     "file": "plan1-lux-sam.jpg",
+     "yaw": 0.7854,
+     "links": [
+      {
+       "to": "salon",
+       "x": 0.27190107339977804,
+       "y": 0.5921861668180572,
+       "dist": 8.4,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-sam-1.jpg",
+     "yaw": 2.3562,
+     "links": [
+      {
+       "to": "sejour",
+       "x": 0.9552288642719494,
+       "y": 0.6402833259415771,
+       "dist": 8,
+       "hidden": true
+      },
+      {
+       "to": "terrasse",
+       "x": 0.8388729519280695,
+       "y": 0.5933141849058459,
+       "dist": 9.2,
+       "hidden": true
+      },
+      {
+       "to": "piscine",
+       "x": 0.39418214000320245,
+       "y": 0.565513804445216,
+       "dist": 9.4,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-sam-2.jpg",
+     "yaw": 3.927,
+     "links": [
+      {
+       "to": "cuisine",
+       "x": 0.8054393282105898,
+       "y": 0.8072238069541602,
+       "dist": 3.9,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-sam-3.jpg",
+     "yaw": 5.4978,
+     "links": [
+      {
+       "to": "hall",
+       "x": 0.3517926720512471,
+       "y": 0.7340367452391137,
+       "dist": 4.2,
+       "hidden": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cuisine",
+   "name": "Cuisine",
+   "x": 19.27,
+   "z": 14.65,
+   "yaw": 1.319468914507713,
+   "dirs": [
+    {
+     "file": "plan1-lux-cuisine.jpg",
+     "yaw": 1.3195,
+     "links": [
+      {
+       "to": "salon",
+       "x": 0.6877057750880332,
+       "y": 0.556713699601179,
+       "dist": 10.6,
+       "hidden": true
+      },
+      {
+       "to": "sejour",
+       "x": 0.5611899723709339,
+       "y": 0.5653351699848382,
+       "dist": 9.3,
+       "hidden": true
+      },
+      {
+       "to": "terrasse",
+       "x": 0.4799820431633989,
+       "y": 0.5555608594242423,
+       "dist": 10,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-cuisine-1.jpg",
+     "yaw": 2.8903,
+     "links": [
+      {
+       "to": "piscine",
+       "x": 0.8663321163797733,
+       "y": 0.6390029950512395,
+       "dist": 7.3,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-cuisine-2.jpg",
+     "yaw": 4.4611,
+     "links": []
+    },
+    {
+     "file": "plan1-lux-cuisine-3.jpg",
+     "yaw": 6.0319,
+     "links": [
+      {
+       "to": "hall",
+       "x": 0.45507360449845274,
+       "y": 0.5999077463430482,
+       "dist": 7.3,
+       "hidden": true
+      },
+      {
+       "to": "sam",
+       "x": 0.27871660874071164,
+       "y": 0.7803821828350894,
+       "dist": 3.9,
+       "hidden": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "terrasse",
+   "name": "Terrasse",
+   "x": 9.6,
+   "z": 12.6,
+   "yaw": 2.261946710584651,
+   "dirs": [
+    {
+     "file": "plan1-lux-terrasse.jpg",
+     "yaw": 2.2619,
+     "links": []
+    },
+    {
+     "file": "plan1-lux-terrasse-1.jpg",
+     "yaw": 3.8327,
+     "links": [
+      {
+       "to": "cuisine",
+       "x": 0.12712104606077312,
+       "y": 0.5861319171749412,
+       "dist": 10,
+       "hidden": true
+      },
+      {
+       "to": "piscine",
+       "x": 0.5626230346664964,
+       "y": 0.5910790011820417,
+       "dist": 7.7,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-terrasse-2.jpg",
+     "yaw": 5.4035,
+     "links": [
+      {
+       "to": "hall",
+       "x": 0.6258334647259787,
+       "y": 0.5401911262606609,
+       "dist": 12,
+       "hidden": true
+      },
+      {
+       "to": "salon",
+       "x": 0.18117448421852894,
+       "y": 0.7499668828372215,
+       "dist": 4.6,
+       "hidden": false
+      },
+      {
+       "to": "sam",
+       "x": 0.7759567527735929,
+       "y": 0.5844692230609607,
+       "dist": 9.2,
+       "hidden": true
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-terrasse-3.jpg",
+     "yaw": 6.9743,
+     "links": []
+    }
+   ]
+  },
+  {
+   "id": "piscine",
+   "name": "Piscine",
+   "x": 13.6,
+   "z": 19,
+   "yaw": 0.7853981633974483,
+   "dirs": [
+    {
+     "file": "plan1-lux-piscine.jpg",
+     "yaw": 0.7854,
+     "links": [
+      {
+       "to": "salon",
+       "x": 0.7719347426747377,
+       "y": 0.5604432452604842,
+       "dist": 11,
+       "hidden": true
+      },
+      {
+       "to": "sejour",
+       "x": 0.7184120254682762,
+       "y": 0.591074925343764,
+       "dist": 8.4,
+       "hidden": true
+      },
+      {
+       "to": "terrasse",
+       "x": 0.60835542478509,
+       "y": 0.5935988553796289,
+       "dist": 7.7,
+       "hidden": false
+      }
+     ]
+    },
+    {
+     "file": "plan1-lux-piscine-1.jpg",
+     "yaw": 2.3562,
+     "links": []
+    },
+    {
+     "file": "plan1-lux-piscine-2.jpg",
+     "yaw": 3.927,
+     "links": []
+    },
+    {
+     "file": "plan1-lux-piscine-3.jpg",
+     "yaw": 5.4978,
+     "links": [
+      {
+       "to": "hall",
+       "x": 0.38046229223739725,
+       "y": 0.5299559336325804,
+       "dist": 13.3,
+       "hidden": true
+      },
+      {
+       "to": "sam",
+       "x": 0.3941821400032023,
+       "y": 0.565513804445216,
+       "dist": 9.4,
+       "hidden": true
+      },
+      {
+       "to": "cuisine",
+       "x": 0.5618161418381608,
+       "y": 0.5992197432844725,
+       "dist": 7.3,
+       "hidden": true
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

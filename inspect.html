@@ -1,0 +1,24 @@
+<!doctype html><html><body style="margin:0;background:#ddd"><canvas id=c></canvas><pre id=o style="position:fixed;top:0;left:0;font:10px monospace;background:#fff8;margin:0"></pre>
+<script type="importmap">{ "imports": { "three": "./three/build/three.module.js", "three/addons/": "./three/examples/jsm/" } }</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+const man = await (await fetch('./assets/manifest.json')).json();
+const r = new THREE.WebGLRenderer({canvas:c, antialias:true}); r.setSize(innerWidth, innerHeight);
+const s = new THREE.Scene(); s.background = new THREE.Color(0xdddddd);
+s.environment = new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment()).texture;
+const ids = (new URLSearchParams(location.search).get('ids')||'').split(',').filter(Boolean).length ? new URLSearchParams(location.search).get('ids').split(',') : Object.keys(man.models).filter(i=>!/tree|shrub/.test(i)); const cols = 9; const out = {};
+const L = new GLTFLoader();
+await Promise.all(ids.map(async (id, i) => {
+  const g = await L.loadAsync(man.models[id]); const o = g.scene;
+  const b = new THREE.Box3().setFromObject(o), sz = b.getSize(new THREE.Vector3()), k = 1 / Math.max(sz.x, sz.y, sz.z);
+  out[id] = sz.toArray().map(v=>+v.toFixed(2));
+  const grp = new THREE.Group(); o.scale.setScalar(k); o.position.set(-(b.min.x+b.max.x)/2*k, -b.min.y*k, -(b.min.z+b.max.z)/2*k); grp.add(o);
+  const arrow = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.15), new THREE.MeshBasicMaterial({color: 0xff0000})); arrow.rotation.x = Math.PI/2; arrow.position.set(0, 0.02, 0.6); grp.add(arrow);
+  grp.position.set((i % cols) * 1.4, 0, -Math.floor(i / cols) * 1.6); s.add(grp);
+}));
+o.textContent = ids.map((id,i)=>`${i} ${id} ${out[id]}`).join('\n');
+const cam = new THREE.PerspectiveCamera(30, innerWidth/innerHeight, 0.1, 100); cam.position.set(5.6, 6, 9); cam.lookAt(5.6, 0, -2.5);
+r.render(s, cam); window.done = true;
+</script></body></html>

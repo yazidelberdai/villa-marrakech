@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Villa Marrakech · Photo walk-in</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --ink: #2a211b; --accent: #b8673f; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #111; color: #fff; font-family: Inter, system-ui, sans-serif; overflow: hidden; }
+  #stage { position: fixed; inset: 0; overflow: hidden; background: #111; }
+  .shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .7s ease, transform 6s ease-out; transform: scale(1.0); }
+  .shot.on { opacity: 1; transform: scale(1.035); }
+  .shot.enter { transform: scale(1.12); }
+  #hot { position: absolute; inset: 0; pointer-events: none; }
+  .hs { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 0; background: none; color: #fff; font: 600 13px Inter, sans-serif; text-shadow: 0 1px 4px #000a; }
+  .hs .ring { width: 54px; height: 54px; border-radius: 50%; border: 3px solid #fffd; background: #fff3; backdrop-filter: blur(3px); box-shadow: 0 2px 12px #0006; transform: perspective(200px) rotateX(55deg); transition: transform .2s, background .2s; }
+  .hs:hover .ring { background: #fff7; transform: perspective(200px) rotateX(45deg) scale(1.12); }
+  .hs span { background: #0008; padding: 4px 9px; border-radius: 999px; }
+  .top { position: fixed; top: 0; left: 0; right: 0; display: flex; gap: 10px; align-items: center; padding: 14px 16px; background: linear-gradient(#000a, #0000); z-index: 5; flex-wrap: wrap; }
+  .top a, .top button { color: #fff; text-decoration: none; font: 600 13px Inter, sans-serif; background: #0006; border: 1px solid #fff4; padding: 8px 12px; border-radius: 999px; cursor: pointer; backdrop-filter: blur(4px); }
+  .top button.on { background: #fff; color: var(--ink); }
+  .top .title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; margin-right: auto; text-shadow: 0 1px 6px #0008; }
+  .top .title small { display: block; font: 500 12px Inter, sans-serif; opacity: .85; }
+  .turn { position: fixed; top: 50%; transform: translateY(-50%); z-index: 4; width: 52px; height: 52px; border-radius: 50%; border: 1px solid #fff5; background: #0005; color: #fff; font-size: 26px; cursor: pointer; backdrop-filter: blur(4px); }
+  .turn:hover { background: #000a; }
+  #left { left: 14px; } #right { right: 14px; }
+  #count { position: fixed; top: calc(50% + 40px); right: 14px; width: 52px; text-align: center; font-size: 12px; z-index: 4; text-shadow: 0 1px 4px #000; }
+  .bottom { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; padding: 30px 12px 12px; background: linear-gradient(#0000, #000b); display: flex; gap: 12px; align-items: flex-end; }
+  #strip { display: flex; gap: 8px; overflow-x: auto; flex: 1; padding-bottom: 2px; scrollbar-width: thin; }
+  .chip { flex: none; width: 120px; border: 2px solid transparent; border-radius: 10px; overflow: hidden; cursor: pointer; background: #222; padding: 0; color: #fff; text-align: left; }
+  .chip img { width: 100%; height: 66px; object-fit: cover; display: block; }
+  .chip span { display: block; font: 600 11.5px Inter, sans-serif; padding: 5px 7px; }
+  .chip.on { border-color: #fff; }
+  #map { flex: none; width: 170px; height: 130px; background: #0008; border-radius: 10px; border: 1px solid #fff3; }
+  #map circle { cursor: pointer; }
+  .note { position: fixed; left: 50%; top: 74px; transform: translateX(-50%); background: #000a; padding: 6px 12px; border-radius: 999px; font-size: 12px; z-index: 5; display: none; }
+  .help { position: fixed; right: 16px; bottom: 170px; font-size: 11.5px; opacity: .75; z-index: 4; text-align: right; text-shadow: 0 1px 4px #000; }
+  @media (max-width: 700px) { #map { display: none; } .chip { width: 96px; } .chip img { height: 54px; } .help { display: none; } .top .title { font-size: 20px; } }
+</style>
+</head>
+<body>
+<div id="stage"><div id="hot"></div></div>
+<div class="top">
+  <div class="title"><span id="room">…</span><small id="sub"></small></div>
+  <button data-plan="1">Plan 1</button><button data-plan="2">Plan 2</button>
+  <button data-style="mid">Mid-Luxury</button><button data-style="lux">Luxury</button>
+  <a id="free" href="#">Free-roam 3D</a>
+  <a href="./">Home</a>
+</div>
+<button class="turn" id="left" title="Previous view (←)">‹</button>
+<button class="turn" id="right" title="Next view (→)">›</button>
+<div id="count"></div>
+<div class="note" id="note">This view's photo is still being made — showing the 3D view</div>
+<div class="help">← → look around · click a circle on the floor to walk there<br>↑ ↓ next / previous room</div>
+<div class="bottom"><div id="strip"></div><svg id="map"></svg></div>
+<script>
+const q = new URLSearchParams(location.search);
+let plan = q.get('plan') || '1', style = q.get('style') || 'lux';
+let T = null, spot = null, idx = 0, have = new Set();
+const stage = document.getElementById('stage'), hot = document.getElementById('hot');
+const photo = (f) => `./photos/real/${f}`, ref = (f) => `./photos/ref/${f}`;
+const fileOf = (v) => `plan${plan}-${style}-${v.id}.jpg`;
+const viewsOf = (s) => T.views.filter((v) => v.spot === s);
+
+async function load() {
+  T = await (await fetch(`./photos/tour-plan${plan}.json`, { cache: 'no-store' })).json();
+  // which AI photos exist (HEAD each once)
+  have = new Set();
+  await Promise.all(T.views.map(async (v) => { const r = await fetch(photo(fileOf(v)), { method: 'HEAD', cache: 'no-store' }); if (r.ok) have.add(v.id); }));
+  document.querySelectorAll('[data-plan]').forEach((b) => b.classList.toggle('on', b.dataset.plan === plan));
+  document.querySelectorAll('[data-style]').forEach((b) => b.classList.toggle('on', b.dataset.style === style));
+  const start = q.get('spot') && T.order.includes(q.get('spot')) ? q.get('spot') : (spot && T.order.includes(spot) ? spot : T.order[0]);
+  buildStrip(); buildMap();
+  go(start, spot === start ? idx : 0, true);
+}
+
+function srcFor(v) { return have.has(v.id) ? photo(fileOf(v)) : ref(fileOf(v)); }
+
+function show(v, enter) {
+  const img = new Image();
+  img.className = 'shot' + (enter ? ' enter' : '');
+  img.alt = T.names[v.spot];
+  img.onload = () => {
+    stage.insertBefore(img, hot);
+    img.getBoundingClientRect(); // commit the start state so the fade/zoom transition runs
+    setTimeout(() => { img.classList.remove('enter'); img.classList.add('on'); }, 20);
+    const old = [...stage.querySelectorAll('.shot')].filter((x) => x !== img);
+    setTimeout(() => old.forEach((o) => o.remove()), 800);
+  };
+  img.src = srcFor(v);
+  document.getElementById('note').style.display = have.has(v.id) ? 'none' : 'block';
+  // hotspots: visible neighbouring spots, positioned for object-fit: cover
+  hot.innerHTML = '';
+  const W = innerWidth, H = innerHeight, ar = 1.5, s = Math.max(W / (H * ar), H * ar / W > 1 ? 1 : 1);
+  const iw = Math.max(W, H * ar), ih = iw / ar, ox = (W - iw) / 2, oy = (H - ih) / 2;
+  for (const l of v.links || []) {
+    if (l.hidden) continue;
+    const x = ox + l.x * iw, y = oy + l.y * ih;
+    if (x < 40 || x > W - 40 || y < 80 || y > H - 150) continue;
+    const b = document.createElement('button');
+    b.className = 'hs'; b.style.left = x + 'px'; b.style.top = y + 'px';
+    b.innerHTML = `<div class="ring"></div><span>${T.names[l.to]}</span>`;
+    b.onclick = () => go(l.to, 0, true);
+    hot.appendChild(b);
+  }
+  // preload neighbours
+  for (const n of viewsOf(v.spot)) new Image().src = srcFor(n);
+}
+
+function go(s, i = 0, enter = false) {
+  spot = s; const vs = viewsOf(s); idx = ((i % vs.length) + vs.length) % vs.length;
+  const v = vs[idx];
+  show(v, enter);
+  document.getElementById('room').textContent = T.names[s];
+  document.getElementById('sub').textContent = `Plan ${plan} · ${style === 'lux' ? 'Luxury' : 'Mid-Luxury'}`;
+  document.getElementById('count').textContent = vs.length > 1 ? `${idx + 1} / ${vs.length}` : '';
+  document.getElementById('left').style.display = document.getElementById('right').style.display = vs.length > 1 ? '' : 'none';
+  document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c.dataset.spot === s));
+  document.querySelector(`.chip[data-spot="${s}"]`)?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+  document.querySelectorAll('#map circle').forEach((c) => { const on = c.dataset.spot === s; c.setAttribute('r', on ? 7 : 5); c.setAttribute('fill', on ? '#fff' : '#b8673f'); });
+  const p = T.spots[s];
+  document.getElementById('free').href = `./viewer.html?plan=${plan}&style=${style}&real=1#${p.x.toFixed(2)},${p.z.toFixed(2)},${v.yaw.toFixed(2)},-0.05`;
+  history.replaceState(null, '', `?plan=${plan}&style=${style}&spot=${s}`);
+}
+
+function buildStrip() {
+  document.getElementById('strip').innerHTML = T.order.map((s) => {
+    const v = viewsOf(s)[0];
+    return `<button class="chip" data-spot="${s}"><img src="${srcFor(v)}" alt="" loading="lazy"><span>${T.names[s]}</span></button>`;
+  }).join('');
+  document.querySelectorAll('.chip').forEach((c) => (c.onclick = () => go(c.dataset.spot, 0, true)));
+}
+
+function buildMap() {
+  const pts = Object.entries(T.spots), xs = pts.map(([, p]) => p.x), zs = pts.map(([, p]) => p.z);
+  const minX = Math.min(...xs) - 2, maxX = Math.max(...xs) + 2, minZ = Math.min(...zs) - 2, maxZ = Math.max(...zs) + 2;
+  const svg = document.getElementById('map'), W = 170, H = 130, k = Math.min(W / (maxX - minX), H / (maxZ - minZ));
+  const px = (x) => (W - (maxX - minX) * k) / 2 + (x - minX) * k, pz = (z) => (H - (maxZ - minZ) * k) / 2 + (z - minZ) * k;
+  const lines = T.order.slice(1).map((s, i) => { const a = T.spots[T.order[i]], b = T.spots[s]; return `<line x1="${px(a.x)}" y1="${pz(a.z)}" x2="${px(b.x)}" y2="${pz(b.z)}" stroke="#fff3" stroke-width="1.5"/>`; }).join('');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = lines + pts.map(([s, p]) => `<circle data-spot="${s}" cx="${px(p.x)}" cy="${pz(p.z)}" r="5" fill="#b8673f" stroke="#fff" stroke-width="1.5"><title>${T.names[s]}</title></circle>`).join('');
+  svg.querySelectorAll('circle').forEach((c) => (c.onclick = () => go(c.dataset.spot, 0, true)));
+}
+
+const step = (d) => { const i = T.order.indexOf(spot); go(T.order[(i + d + T.order.length) % T.order.length], 0, true); };
+document.getElementById('left').onclick = () => go(spot, idx - 1);
+document.getElementById('right').onclick = () => go(spot, idx + 1);
+addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') go(spot, idx - 1);
+  else if (e.key === 'ArrowRight') go(spot, idx + 1);
+  else if (e.key === 'ArrowUp') step(1);
+  else if (e.key === 'ArrowDown') step(-1);
+});
+let tx = null;
+stage.addEventListener('touchstart', (e) => (tx = e.touches[0].clientX), { passive: true });
+stage.addEventListener('touchend', (e) => { if (tx == null) return; const d = e.changedTouches[0].clientX - tx; if (Math.abs(d) > 50) go(spot, idx + (d < 0 ? 1 : -1)); tx = null; });
+addEventListener('resize', () => go(spot, idx));
+document.querySelectorAll('[data-plan]').forEach((b) => (b.onclick = () => { if (plan !== b.dataset.plan) { plan = b.dataset.plan; spot = null; load(); } }));
+document.querySelectorAll('[data-style]').forEach((b) => (b.onclick = () => { if (style !== b.dataset.style) { style = b.dataset.style; load(); } }));
+load();
+</script>
+</body>
+</html>

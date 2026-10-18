@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Villa Marrakech · Photos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #f4ece0; --ink: #2a211b; --muted: #7a6a5c; --card: #fffaf3; --line: #e5d8c6; --accent: #b8673f; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: Inter, system-ui, sans-serif; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 40px 16px; }
+  a.back { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 14px; }
+  h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5vw, 56px); margin: 10px 0 6px; font-weight: 600; }
+  p.lead { color: var(--muted); max-width: 680px; line-height: 1.6; margin: 0 0 24px; }
+  .bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .bar button { border: 1px solid var(--line); background: var(--card); padding: 9px 14px; border-radius: 999px; font: 600 14px Inter, sans-serif; cursor: pointer; color: var(--ink); }
+  .bar button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+  figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .img { position: relative; aspect-ratio: 3/2; background: #ddd; cursor: zoom-in; }
+  .img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .img .ref { position: absolute; right: 10px; bottom: 10px; width: 30%; border: 2px solid #fff; border-radius: 6px; height: auto; box-shadow: 0 2px 8px #0005; }
+  .pending { position: absolute; inset: 0; display: grid; place-items: center; background: #0007; color: #fff; font-weight: 600; font-size: 14px; text-align: center; padding: 16px; }
+  figcaption { padding: 12px 14px; font-size: 14px; display: flex; justify-content: space-between; gap: 8px; }
+  figcaption span { color: var(--muted); }
+  #big { position: fixed; inset: 0; background: #000e; display: none; place-items: center; z-index: 9; cursor: zoom-out; }
+  #big img { max-width: 96vw; max-height: 94vh; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="./">← Back to the plans</a>
+  <h1>Photos of the finished house</h1>
+  <p class="lead">Each photo is an AI photograph made from the matching 3D walk-in view, keeping the same layout, camera angle and furniture. The small inset shows the 3D view it came from. They are illustrations: small details such as fixtures and textures may differ from the plan.</p>
+  <div class="bar" id="plans"></div>
+  <div class="bar" id="styles"></div>
+  <div class="grid" id="grid"></div>
+</div>
+<div id="big" onclick="this.style.display='none'"><img alt=""></div>
+<script>
+const ROOMS = [['salon', 'Salon'], ['sejour', 'Séjour'], ['sam', 'Dining room'], ['cuisine', 'Kitchen'], ['terrasse', 'Terrace'], ['piscine', 'Pool & garden']];
+const PLANS = [['1', 'Plan 1'], ['2', 'Plan 2']], STYLES = [['mid', 'Mid-Luxury'], ['lux', 'Luxury']];
+const q = new URLSearchParams(location.search);
+let plan = q.get('plan') || '1', style = q.get('style') || 'mid';
+const bar = (el, list, cur, set) => { el.innerHTML = list.map(([k, n]) => `<button class="${k === cur ? 'on' : ''}" data-k="${k}">${n}</button>`).join(''); el.onclick = (e) => { const k = e.target.dataset.k; if (k) { set(k); render(); } }; };
+function render() {
+  history.replaceState(null, '', `?plan=${plan}&style=${style}`);
+  bar(document.getElementById('plans'), PLANS, plan, (k) => (plan = k));
+  bar(document.getElementById('styles'), STYLES, style, (k) => (style = k));
+  document.getElementById('grid').innerHTML = ROOMS.map(([id, name]) => {
+    const f = `plan${plan}-${style}-${id}.jpg`, real = `./photos/real/${f}?v=${Date.now() >> 16}`, ref = `./photos/ref/${f}`;
+    return `<figure><div class="img" data-f="${f}"><img class="main" src="${real}" onerror="this.src='${ref}';this.onerror=null;this.parentNode.insertAdjacentHTML('beforeend','<div class=pending>Photo not generated yet — showing the 3D view</div>');this.nextElementSibling.remove()"><img class="ref" src="${ref}" alt=""></div>
+      <figcaption><strong>${name}</strong><span>${PLANS.find((p) => p[0] === plan)[1]} · ${STYLES.find((s) => s[0] === style)[1]}</span></figcaption></figure>`;
+  }).join('');
+}
+document.getElementById('grid').onclick = (e) => { const i = e.target.closest('.img')?.querySelector('img.main'); if (!i) return; const b = document.getElementById('big'); b.querySelector('img').src = i.src; b.style.display = 'grid'; };
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Villa Marrakech · Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --ink: #f6efe4; --panel: rgba(28, 22, 18, 0.72); --line: rgba(246, 239, 228, 0.16); --accent: #d9a46c; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1b1512; font-family: Inter, system-ui, sans-serif; color: var(--ink); }
+  canvas { display: block; touch-action: none; cursor: grab; }
+  canvas:active { cursor: grabbing; }
+  .panel { position: fixed; background: var(--panel); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: 14px; }
+  #side { top: 16px; left: 16px; width: 248px; padding: 16px; max-height: calc(100vh - 32px); overflow: auto; }
+  #side a.home { color: var(--accent); font-size: 12px; text-decoration: none; letter-spacing: .08em; text-transform: uppercase; }
+  h1 { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 30px; margin: 6px 0 2px; line-height: 1; }
+  #tagline { font-size: 12px; opacity: .75; line-height: 1.45; margin: 4px 0 12px; }
+  .seg { display: flex; background: rgba(255,255,255,.06); border-radius: 10px; padding: 3px; margin-bottom: 10px; }
+  .seg button { flex: 1; border: 0; background: transparent; color: var(--ink); padding: 8px 6px; border-radius: 8px; font: 600 12px Inter, sans-serif; cursor: pointer; opacity: .7; }
+  .seg button.on { background: var(--accent); color: #1b1512; opacity: 1; }
+  .row { display: flex; gap: 6px; margin-bottom: 12px; }
+  .row button { flex: 1; }
+  button.btn { border: 1px solid var(--line); background: rgba(255,255,255,.06); color: var(--ink); padding: 8px 8px; border-radius: 9px; font: 500 12px Inter, sans-serif; cursor: pointer; }
+  button.btn:hover { background: rgba(255,255,255,.14); }
+  .cap { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; opacity: .55; margin: 4px 0 6px; }
+  .tabs { display: flex; gap: 4px; margin-top: 10px; }
+  .tabs button { flex: 1; border: 1px solid var(--line); border-bottom: 2px solid transparent; background: transparent; color: var(--ink); padding: 7px; font: 600 12px Inter, sans-serif; cursor: pointer; border-radius: 8px 8px 0 0; opacity: .6; }
+  .tabs button.on { opacity: 1; border-bottom-color: var(--accent); background: rgba(255,255,255,.06); }
+  button.shot { width: 100%; margin-bottom: 12px; background: rgba(217,164,108,.18); border-color: rgba(217,164,108,.5); }
+  #views { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  #views button { text-align: left; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--ink); padding: 7px 8px; border-radius: 8px; font: 500 12px Inter, sans-serif; cursor: pointer; }
+  #views button:hover { border-color: var(--accent); }
+  #views span { display: inline-block; width: 14px; color: var(--accent); font-weight: 600; }
+  #mmwrap { top: 16px; right: 16px; padding: 8px; }
+  #minimap { display: block; width: 240px; height: 210px; cursor: crosshair; border-radius: 8px; }
+  #mmwrap .cap { margin: 6px 4px 0; display: flex; justify-content: space-between; }
+  #mmwrap a { color: var(--accent); text-decoration: none; letter-spacing: 0; text-transform: none; font-size: 11px; opacity: 1; }
+  #help { bottom: 16px; left: 50%; transform: translateX(-50%); padding: 10px 16px; font-size: 12px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; max-width: calc(100vw - 32px); }
+  #help.hide { display: none; }
+  kbd { font: 600 11px Inter, sans-serif; background: rgba(255,255,255,.12); border-radius: 5px; padding: 2px 6px; margin-right: 4px; }
+  #photoBar { display: none; top: 16px; left: 50%; transform: translateX(-50%); padding: 10px 12px 10px 16px; gap: 10px; align-items: center; font-size: 13px; z-index: 5; }
+  #photoBar button:disabled { opacity: .4; }
+  .photoHide { display: none !important; }
+  #dot { position: fixed; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: rgba(255,255,255,.7); box-shadow: 0 0 0 1px rgba(0,0,0,.3); pointer-events: none; }
+  #labels { position: fixed; inset: 0; pointer-events: none; display: none; }
+  .label { position: absolute; left: 0; top: 0; background: rgba(28,22,18,.78); border: 1px solid var(--line); padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+  #loading { position: fixed; inset: 0; display: grid; place-items: center; background: #1b1512; font-family: 'Cormorant Garamond', serif; font-size: 28px; z-index: 9; }
+  #pad { position: fixed; right: 16px; bottom: 16px; display: none; grid-template-columns: repeat(3, 52px); gap: 6px; }
+  #pad button { height: 52px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font-size: 20px; }
+  @media (pointer: coarse) { #pad { display: grid; } }
+  @media (max-width: 760px) {
+    #side { width: auto; right: 16px; max-height: 42vh; padding: 12px; }
+    #mmwrap { display: none; }
+    #help { display: none; }
+    h1 { font-size: 24px; }
+  }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./three/build/three.module.js", "three/addons/": "./three/examples/jsm/" } }
+</script>
+</head>
+<body>
+<div id="loading">Building the villa…</div>
+<div id="side" class="panel">
+  <a class="home" href="./">← Villa Marrakech</a>
+  <div class="tabs"><button data-plan="1">Plan 1</button><button data-plan="2">Plan 2</button></div>
+  <div id="planName" class="cap" style="margin-top:8px"></div>
+  <h1 id="styleName">…</h1>
+  <div id="tagline"></div>
+  <div class="seg"><button data-style="mid">Mid-Luxury</button><button data-style="lux">Luxury</button></div>
+  <div class="seg"><button data-real="0">3D model</button><button data-real="1">Photoreal</button></div>
+  <button class="btn shot" id="photoBtn">📷 Take a photo of this view</button>
+  <div class="row"><button class="btn" id="modeBtn">Overview (no roof)</button><button class="btn" id="nightBtn">Night</button></div>
+  <div class="cap">Go to</div>
+  <div id="views"></div>
+  <div class="row" style="margin:12px 0 0"><button class="btn" id="helpBtn">Controls</button></div>
+</div>
+<div id="mmwrap" class="panel">
+  <canvas id="minimap" width="480" height="420"></canvas>
+  <div class="cap"><span>Plan · click to go</span><a id="planLink" href="./ref/plan_small.jpg" target="_blank">Original plan ↗</a></div>
+</div>
+<div id="help" class="panel">
+  <span><kbd>W A S D</kbd>/<kbd>↑↓</kbd> walk</span><span><kbd>Shift</kbd> faster</span><span><kbd>Drag</kbd> look around</span>
+  <span><kbd>Double-click</kbd> walk to a spot</span><span><kbd>1–9</kbd> rooms</span><span><kbd>O</kbd> overview</span><span><kbd>N</kbd> night</span><span><kbd>M</kbd> switch style</span><span><kbd>P</kbd> photo</span>
+</div>
+<div id="dot"></div>
+<div id="photoBar" class="panel"><span id="photoText"></span><button class="btn" id="photoSave" disabled>Save photo</button><button class="btn" id="photoClose">Back to walking</button></div>
+<div id="labels"></div>
+<div id="pad">
+  <span></span><button data-key="KeyW">▲</button><span></span>
+  <button data-key="KeyA">◀</button><button data-key="KeyS">▼</button><button data-key="KeyD">▶</button>
+</div>
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>
